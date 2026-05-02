@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Language Translator</title>
+
+    <style>
+        :root {
+            --bg: #f2efe9;
+            --card: #faf9f6;
+            --border: #ddd9d0;
+            --border-strong: #cec8bc;
+            --text: #1a1a18;
+            --text-muted: #8a8780;
+            --accent: #2c2c28;
+            --accent-hover: #444440;
+            --tag-bg: #eae7e0;
+            --result-bg: #f0ede6;
+            --logout-border: rgba(180, 70, 70, 0.28);
+            --logout-bg: rgba(180, 70, 70, 0.06);
+            --logout-text: #8f4b4b;
+            --shadow: 0 18px 40px rgba(43, 35, 25, 0.08), 0 4px 12px rgba(0, 0, 0, 0.04);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background:
+                radial-gradient(circle at top, rgba(255, 255, 255, 0.8), transparent 32%),
+                linear-gradient(180deg, #f4f1eb 0%, #ece7df 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 24px;
+        }
+
+        .container {
+            background: var(--card);
+            padding: 36px 32px 32px;
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            width: min(540px, 100%);
+            border: 1px solid rgba(214, 208, 198, 0.9);
+            position: relative;
+        }
+
+        .logout-btn {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            padding: 8px 14px;
+            border: 1px solid var(--logout-border);
+            border-radius: 999px;
+            background: var(--logout-bg);
+            color: var(--logout-text);
+            font-size: 12px;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            letter-spacing: 0.02em;
+            transition: background 0.18s, color 0.18s, border-color 0.18s, transform 0.18s;
+            text-decoration: none;
+            display: inline-block;
+            line-height: 1;
+            box-shadow: 0 0 0 3px rgba(180, 70, 70, 0.04);
+        }
+
+        .logout-btn:hover {
+            background: rgba(180, 70, 70, 0.1);
+            border-color: rgba(180, 70, 70, 0.38);
+            color: #7b3737;
+            transform: translateY(-1px);
+        }
+
+        .title-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+            margin-top: 4px;
+        }
+
+        .title-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #ebe6dc 0%, #f4f1ea 100%);
+            border: 1px solid rgba(214, 208, 198, 0.85);
+            color: var(--text);
+            flex-shrink: 0;
+        }
+
+        h2 {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text);
+            letter-spacing: -0.01em;
+        }
+
+        .lang-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .lang-row label {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            padding: 10px 40px 10px 14px;
+            border-radius: 14px;
+            border: 1px solid rgba(214, 208, 198, 0.95);
+            background-color: #fdfbf7;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14' fill='none'%3E%3Cpath d='M3 5.25L7 9.25L11 5.25' stroke='%23706d67' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85), 0 1px 2px rgba(28, 26, 22, 0.03);
+            font-size: 13px;
+            font-family: 'DM Sans', sans-serif;
+            color: var(--text);
+            height: 40px;
+            cursor: pointer;
+            outline: none;
+            transition: border-color 0.18s, box-shadow 0.18s, transform 0.18s;
+            flex: 1;
+        }
+
+        select:hover {
+            border-color: var(--border-strong);
+        }
+
+        select:focus {
+            border-color: #b8b4ab;
+            box-shadow: 0 0 0 4px rgba(184, 180, 171, 0.18);
+        }
+
+        .swap-btn {
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            border: 1px solid rgba(214, 208, 198, 0.95);
+            border-radius: 12px;
+            background: linear-gradient(180deg, #f6f2eb 0%, #ece7df 100%);
+            color: var(--text);
+            font-size: 14px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: background 0.15s, border-color 0.15s, transform 0.15s;
+            line-height: 1;
+            box-shadow: 0 1px 2px rgba(28, 26, 22, 0.05);
+        }
+
+        .swap-btn:hover {
+            background: linear-gradient(180deg, #f0ebe3 0%, #e4ddd4 100%);
+            border-color: #c8c4bb;
+            transform: translateY(-1px);
+        }
+
+        .swap-btn svg {
+            display: block;
+        }
+
+        textarea {
+            width: 100%;
+            height: 120px;
+            padding: 14px 16px;
+            border-radius: 16px;
+            border: 1px solid rgba(214, 208, 198, 0.95);
+            background: #fdfbf7;
+            resize: none;
+            font-size: 14px;
+            font-family: 'DM Sans', sans-serif;
+            color: var(--text);
+            outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s;
+            line-height: 1.6;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85);
+        }
+
+        textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        textarea:focus {
+            border-color: #b8b4ab;
+            box-shadow: 0 0 0 4px rgba(184, 180, 171, 0.16);
+        }
+
+        .translate-action {
+            display: flex;
+            justify-content: center;
+            margin-top: 16px;
+        }
+
+        .translate-btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 999px;
+            background: var(--accent);
+            color: #f5f3ee;
+            font-size: 13px;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 500;
+            cursor: pointer;
+            letter-spacing: 0.01em;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
+            min-width: 140px;
+            box-shadow: 0 10px 20px rgba(44, 44, 40, 0.14);
+        }
+
+        .translate-btn:hover:not(:disabled) {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+
+        .translate-btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        h4 {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-top: 24px;
+            margin-bottom: 8px;
+        }
+
+        .result-box {
+            background: var(--result-bg);
+            border: 1px solid rgba(214, 208, 198, 0.95);
+            border-radius: 16px;
+            padding: 16px 52px 16px 16px;
+            min-height: 56px;
+            font-size: 14px;
+            font-family: 'DM Mono', monospace;
+            color: var(--text);
+            line-height: 1.6;
+            position: relative;
+        }
+
+        #resultText {
+            word-break: break-word;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 30px;
+            height: 30px;
+            border: 1px solid rgba(214, 208, 198, 0.95);
+            border-radius: 7px;
+            background: #fdfbf7;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.15s;
+            flex-shrink: 0;
+            color: #5a5854;
+        }
+
+        .copy-btn:hover {
+            background: var(--tag-bg);
+            border-color: #c8c4bb;
+            transform: translateY(-1px);
+        }
+
+        .copy-btn svg {
+            display: block;
+            pointer-events: none;
+        }
+
+        .copy-btn.copied {
+            background: rgba(180, 70, 70, 0.08);
+            border-color: rgba(180, 70, 70, 0.35);
+            color: #8f4b4b;
+        }
+
+        #copyMsg {
+            position: absolute;
+            bottom: -22px;
+            right: 0;
+            font-size: 11px;
+            color: var(--text-muted);
+            white-space: nowrap;
+            display: none;
+        }
+
+        .spinner {
+            width: 28px;
+            height: 28px;
+            border: 3px solid var(--border);
+            border-top: 3px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: auto;
+        }
+
+        .mini-spinner {
+            width: 12px;
+            height: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            border-top: 2px solid #fff;
+            border-radius: 50%;
+            display: inline-block;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 16px;
+                align-items: flex-start;
+            }
+
+            .container {
+                padding: 56px 18px 24px;
+                border-radius: 20px;
+            }
+
+            .lang-row {
+                flex-wrap: wrap;
+            }
+
+            .lang-row label {
+                width: 100%;
+                margin-bottom: -2px;
+            }
+
+            .swap-btn {
+                order: 3;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <a href="/logout" style="text-decoration:none;">
+            <button class="logout-btn">Logout</button>
+        </a>
+
+        <div class="title-row">
+            <span class="title-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M4 7H14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+                    <path d="M4 12H10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+                    <path d="M4 17H8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+                    <path d="M15.5 7L20 12L15.5 17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                    <path d="M20 12H10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+                </svg>
+            </span>
+            <h2>Language Translator</h2>
+        </div>
+
+        <form method="post" onsubmit="showLoader()">
+            <div class="lang-row">
+                <label>From</label>
+
+                <select name="source_lang" id="source_lang" onchange="updateTarget(); updatePlaceholder();">
+                    <option value="en">English</option>
+                    <option value="hi">Hindi</option>
+                    <option value="fr">French</option>
+                    <option value="es">Spanish</option>
+                    <option value="de">German</option>
+                </select>
+
+                <button type="button" class="swap-btn" onclick="swapLanguages()" title="Swap languages">
+                    <svg width="16" height="12" viewBox="0 0 16 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M1 3.5H13M13 3.5L10 1M13 3.5L10 6" stroke="#1a1a18" stroke-width="1.25"
+                            stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M15 8.5H3M3 8.5L6 6M3 8.5L6 11" stroke="#1a1a18" stroke-width="1.25"
+                            stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </button>
+
+                <label>To</label>
+
+                <select name="target_lang" id="target_lang">
+                    <option value="hi">Hindi</option>
+                    <option value="fr">French</option>
+                    <option value="es">Spanish</option>
+                    <option value="de">German</option>
+                </select>
+            </div>
+
+            <textarea id="inputText" name="data" oninput="toggleButton()" required
+                placeholder="Enter English text..."></textarea>
+
+            <div class="translate-action">
+                <button id="translateBtn" type="submit" class="translate-btn">
+                    <span id="btnText">Translate</span>
+                    <span id="btnSpinner" style="display:none;">
+                        <span class="mini-spinner"></span>
+                    </span>
+                </button>
+            </div>
+        </form>
+
+        <h4>Result</h4>
+
+        <div class="result-box">
+            <div id="resultText">{{translated_text}}</div>
+
+            <button class="copy-btn" id="copyBtn" onclick="copyText()" title="Copy result" type="button"
+                aria-label="Copy result">
+                <span id="copyIcon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" stroke="currentColor"
+                        stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                        <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                </span>
+            </button>
+            <span id="copyMsg">Copied!</span>
+        </div>
+
+        <script>
+            const copySvg = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                    <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+            `;
+
+            const checkSvg = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                    <path d="M20 6L9 17L4 12"></path>
+                </svg>
+            `;
+
+            function updateTarget() {
+                let source = document.getElementById("source_lang").value;
+                let target = document.getElementById("target_lang");
+                target.innerHTML = "";
+                if (source === "en") {
+                    target.innerHTML = `
+                        <option value="hi">Hindi</option>
+                        <option value="fr">French</option>
+                        <option value="es">Spanish</option>
+                        <option value="de">German</option>
+                    `;
+                } else {
+                    target.innerHTML = `<option value="en">English</option>`;
+                }
+            }
+
+            function swapLanguages() {
+                let source = document.getElementById("source_lang");
+                let target = document.getElementById("target_lang");
+                let sourceVal = source.value;
+                let targetVal = target.value;
+                if (sourceVal === "en" || targetVal === "en") {
+                    source.value = targetVal;
+                    updateTarget();
+                    target.value = sourceVal;
+                    updatePlaceholder();
+                } else {
+                    alert("Swap only works with English ↔ other languages");
+                }
+            }
+
+            function updatePlaceholder() {
+                let source = document.getElementById("source_lang").value;
+                let textarea = document.getElementById("inputText");
+                let placeholders = {
+                    "en": "Enter English text...",
+                    "hi": "हिंदी में लिखें...",
+                    "fr": "Entrez du texte en français...",
+                    "es": "Escribe texto en español...",
+                    "de": "Geben Sie deutschen Text ein..."
+                };
+                textarea.placeholder = placeholders[source] || "";
+            }
+
+            function toggleButton() {
+                let text = document.getElementById("inputText").value;
+                let button = document.getElementById("translateBtn");
+                button.disabled = text.trim() === "";
+            }
+
+            window.onload = function () {
+                toggleButton();
+                updatePlaceholder();
+                updateTarget();
+            }
+
+            function copyText() {
+                let text = document.getElementById("resultText").innerText.trim();
+                if (!text) return;
+
+                navigator.clipboard.writeText(text).then(() => {
+                    let msg = document.getElementById("copyMsg");
+                    let btn = document.getElementById("copyBtn");
+                    let icon = document.getElementById("copyIcon");
+
+                    btn.classList.add("copied");
+                    btn.title = "Copied";
+                    btn.setAttribute("aria-label", "Copied");
+                    icon.innerHTML = checkSvg;
+                    msg.style.display = "block";
+
+                    setTimeout(() => {
+                        msg.style.display = "none";
+                        btn.classList.remove("copied");
+                        btn.title = "Copy result";
+                        btn.setAttribute("aria-label", "Copy result");
+                        icon.innerHTML = copySvg;
+                    }, 1500);
+                });
+            }
+
+            function showLoader() {
+                let btn = document.getElementById("translateBtn");
+                let text = document.getElementById("btnText");
+                let spinner = document.getElementById("btnSpinner");
+                btn.disabled = true;
+                text.innerText = "Translating...";
+                spinner.style.display = "inline";
+            }
+        </script>
+    </div>
+</body>
+
+</html>
