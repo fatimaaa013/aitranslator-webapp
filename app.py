@@ -142,7 +142,7 @@ def logout():
 import os
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 10000))
+    port = int(os.environ.get("PORT", 7860))
 
     # Detect environment
     debug_mode = os.environ.get("ENV") != "production"
