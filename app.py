@@ -143,4 +143,8 @@ import os
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
-    app.run(host="0.0.0.0", port=port, debug=True)
+
+    # Detect environment
+    debug_mode = os.environ.get("ENV") != "production"
+
+    app.run(host="0.0.0.0", port=port, debug=debug_mode)
