@@ -2,6 +2,12 @@ from flask import Flask, render_template, request, redirect, session
 from transformers import MarianMTModel, MarianTokenizer
 import json
 import hashlib
+import os
+
+# Ensure users.json exists
+if not os.path.exists("users.json"):
+    with open("users.json", "w") as f:
+        json.dump({}, f)
 
 model_cache = {}
 tokenizer_cache = {}
@@ -62,8 +68,10 @@ def translation(data, source_lang, target_lang):
 
     return step1
 
+
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
+
 
 # Translator page
 @app.route("/translate", methods=["POST", "GET"])
@@ -97,8 +105,11 @@ def login():
         email = request.form.get("email")
         password = request.form.get("password")
 
-        with open("users.json", "r") as f:
-            users = json.load(f)
+        try:
+            with open("users.json", "r") as f:
+                users = json.load(f)
+        except:
+            users = {}
 
         if email in users and users[email]["password"] == hash_password(password):
             session["user"] = email
@@ -115,8 +126,11 @@ def signup():
         email = request.form.get("email")
         password = request.form.get("password")
 
-        with open("users.json", "r") as f:
-            users = json.load(f)
+        try:
+            with open("users.json", "r") as f:
+                users = json.load(f)
+        except:
+            users = {}
 
         if email in users:
             return render_template("signup.html", error="User already exists")
@@ -139,7 +153,6 @@ def logout():
 
 
 # For deployment
-import os
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 7860))
