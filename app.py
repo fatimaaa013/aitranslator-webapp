@@ -108,7 +108,7 @@ def login():
         try:
             with open("users.json", "r") as f:
                 users = json.load(f)
-        except:
+        except FileNotFoundError:
             users = {}
 
         if email in users and users[email]["password"] == hash_password(password):
@@ -129,7 +129,7 @@ def signup():
         try:
             with open("users.json", "r") as f:
                 users = json.load(f)
-        except:
+        except FileNotFoundError:
             users = {}
 
         if email in users:
