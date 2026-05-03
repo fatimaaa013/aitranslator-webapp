@@ -4,6 +4,9 @@ import json
 import hashlib
 import os
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+USERS_FILE = os.path.join(BASE_DIR, "users.json")
+
 # Ensure users.json exists
 if not os.path.exists("users.json"):
     with open("users.json", "w") as f:
@@ -106,7 +109,7 @@ def login():
         password = request.form.get("password")
 
         try:
-            with open("users.json", "r") as f:
+            with open(USERS_FILE, "r") as f:
                 users = json.load(f)
         except FileNotFoundError:
             users = {}
@@ -127,7 +130,7 @@ def signup():
         password = request.form.get("password")
 
         try:
-            with open("users.json", "r") as f:
+            with open(USERS_FILE, "r") as f:
                 users = json.load(f)
         except FileNotFoundError:
             users = {}
@@ -138,8 +141,8 @@ def signup():
         hashed_password = hash_password(password)
         users[email] = {"password": hashed_password}
 
-        with open("users.json", "w") as f:
-            json.dump(users, f)
+        with open(USERS_FILE, "w") as f:
+            json.dump(users, f, indent=4)
 
         return redirect("/login")
 
