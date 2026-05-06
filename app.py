@@ -8,8 +8,8 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 USERS_FILE = os.path.join(BASE_DIR, "users.json")
 
 # Ensure users.json exists
-if not os.path.exists("users.json"):
-    with open("users.json", "w") as f:
+if not os.path.exists(USERS_FILE):
+    with open(USERS_FILE, "w") as f:
         json.dump({}, f)
 
 model_cache = {}
