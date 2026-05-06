@@ -84,8 +84,6 @@ def hash_password(password):
 # Translator page
 @app.route("/translate", methods=["POST", "GET"])
 def translate():
-    if "user" not in session:
-        return redirect("/login")
     translated_text = ""
     if request.method == "POST":
         data = request.form["data"]
@@ -120,7 +118,6 @@ def login():
             users = {}
 
         if email in users and users[email]["password"] == hash_password(password):
-            session["user"] = email
             return redirect("/translate")
         else:
             return render_template("login.html", error="Invalid credentials")
