@@ -1,12 +1,13 @@
 from flask import Flask, render_template, request, redirect, session
 from transformers import MarianMTModel, MarianTokenizer
-from flask_session import Session
 import json
 import hashlib
 import os
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-USERS_FILE = os.path.join(BASE_DIR, "users.json")
+USERS_FILE = os.environ.get(
+    "USERS_FILE",
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), "users.json")
+)
 
 # Ensure users.json exists
 if not os.path.exists(USERS_FILE):
@@ -17,12 +18,10 @@ model_cache = {}
 tokenizer_cache = {}
 
 app = Flask(__name__)
-app.secret_key = "your_secret_key"
+app.secret_key = os.environ.get("SECRET_KEY", "local-dev-fallback-key")
 
-app.config["SESSION_PERMANENT"] = False
-app.config["SESSION_TYPE"] = "filesystem"
-
-Session(app)
+app.config["SESSION_COOKIE_SECURE"] = False
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 
 # to select the model
 model_name = "Helsinki-NLP/opus-mt-en-hi"

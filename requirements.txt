@@ -38,4 +38,3 @@ transformers==5.5.3
 typer==0.24.1
 typing_extensions==4.15.0
 Werkzeug==3.1.8
-Flask-Session
