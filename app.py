@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, session
 from transformers import MarianMTModel, MarianTokenizer
+from flask_session import Session
 import json
 import hashlib
 import os
@@ -17,6 +18,11 @@ tokenizer_cache = {}
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key"
+
+app.config["SESSION_PERMANENT"] = False
+app.config["SESSION_TYPE"] = "filesystem"
+
+Session(app)
 
 # to select the model
 model_name = "Helsinki-NLP/opus-mt-en-hi"
