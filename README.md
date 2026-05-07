@@ -76,4 +76,3 @@ http://127.0.0.1:5000/
 - Improve translation accuracy with better models
 - Add speech-to-text input
 - Add translation history
-- Deploy using Docker for scalability
